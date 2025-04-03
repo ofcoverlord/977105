@@ -1,0 +1,6 @@
+pyTelegramBotAPI
+beautifulsoup4
+requests
+pyrogram
+TgCrypto
+TeleBot
