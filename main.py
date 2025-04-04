@@ -8,14 +8,14 @@ bot = TeleBot(BOT_TOKEN)
 WEBHOOK_URL = f"https://your-app-name.onrender.com/{BOT_TOKEN}"  # Replace with your Render URL
 
 # Import all handlers and DB
-from handler.start import setup_start_handler
-from handler.admin import setup_admin_handlers
-from handler.verify import setup_verification_handler
-from handler.phishing import setup_phishing_handler
-from handler.osint import setup_osint_handler
-from handler.camera import setup_camera_handler
-from handler.location import setup_location_handler
-from handler.broadcast import setup_broadcast_handler
+from handlers.start import setup_start_handler
+from handlers.admin import setup_admin_handlers
+from handlers.verify import setup_verification_handler
+from handlers.phishing import setup_phishing_handler
+from handlers.osint import setup_osint_handler
+from handlers.camera import setup_camera_handler
+from handlers.location import setup_location_handler
+from handlers.broadcast import setup_broadcast_handler
 from utils.database import init_db
 
 # Flask App
