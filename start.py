@@ -11,40 +11,47 @@ def setup_start_handler(bot, users, user_modes):
         chat_id = str(message.chat.id)
         user_id = str(message.from_user.id)
 
-        print(f"🔥 /start triggered by {chat_id}")  # ✅ Debug log
+        print(f"🔥 /start triggered by user {user_id} (chat_id: {chat_id})")
 
-        user_modes.pop(chat_id, None)  # Reset mode on /start
+        # Reset any mode
+        user_modes.pop(chat_id, None)
 
-        # ✅ Referral logic
-        try:
-            if " " in message.text:
-                ref_id = message.text.split()[1]
-                if ref_id != user_id:
-                    print(f"➕ Referral detected: {ref_id} invited {user_id}")
+        # ✅ Handle referral if present
+        if " " in message.text:
+            ref_id = message.text.split()[1]
+            if ref_id != user_id:
+                try:
                     add_referral(ref_id, user_id)
-        except Exception as e:
-            print(f"⚠️ Referral logic error: {e}")
+                    print(f"➕ Referral: {ref_id} invited {user_id}")
+                except Exception as e:
+                    print(f"⚠️ Referral error: {e}")
 
-        # ✅ Initialize user if not exists
+        # ✅ First time user
         if chat_id not in users:
             users[chat_id] = {
                 "uses_left": 1,
                 "referrals": [],
                 "joined": False
             }
-            print(f"🆕 New user added: {chat_id}")
+            print(f"🆕 Added new user: {chat_id}")
 
-        # ✅ Verification check
         try:
             if not users[chat_id]["joined"]:
-                print(f"🔐 Sending verification to: {chat_id}")
-                bot.send_photo(chat_id, HACKING_IMAGE_URL,
-                    caption="👾 *Welcome to H4ckers Adda Bot* 👾\n\n🔐 Educational Purpose Only!\n🔗 Please join our channel and verify.",
-                    parse_mode="Markdown")
+                print(f"🔐 User not verified, sending verification: {chat_id}")
+                bot.send_photo(
+                    chat_id,
+                    HACKING_IMAGE_URL,
+                    caption=(
+                        "👾 *Welcome to H4ckers Adda Bot* 👾\n\n"
+                        "🔐 Educational Purpose Only!\n"
+                        "🔗 Please join our channel and verify."
+                    ),
+                    parse_mode="Markdown"
+                )
                 send_verification_instructions(bot, chat_id)
             else:
-                print(f"✅ Showing main menu to verified user: {chat_id}")
+                print(f"✅ Verified user, showing menu: {chat_id}")
                 show_main_menu(bot, chat_id)
         except Exception as e:
-            print(f"❌ Error in start handler for {chat_id}: {e}")
+            print(f"❌ Error in /start for {chat_id}: {e}")
 
