@@ -1,5 +1,5 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
-from utils.database import save_user  # ✅ Correct import
+from database import save_user  # ✅ Correct import
 
 def setup_verification_handler(bot, users):
     @bot.message_handler(func=lambda msg: msg.text == "I've Joined")
