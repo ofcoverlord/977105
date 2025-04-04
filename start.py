@@ -1,6 +1,6 @@
-from handlers.verify import send_verification_instructions
-from handlers.menu import show_main_menu
-from utils.user_db import add_referral
+from verify import send_verification_instructions
+from menu import show_main_menu
+from user_db import add_referral
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 HACKING_IMAGE_URL = "https://t.me/PHOTOUPLOAD22/2"
