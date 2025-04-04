@@ -1,6 +1,6 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telebot import TeleBot
-from handlers.start import show_main_menu
+from start import show_main_menu
 
 PHISHING_IMAGE_URL = "https://ibb.co/0jH3KL5s"  # Replace with your phishing image URL
 
