@@ -1,6 +1,6 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telebot import TeleBot
-from handlers.start import show_main_menu
+from start import show_main_menu
 
 def setup_location_handler(bot: TeleBot):
 
