@@ -5,7 +5,7 @@ from telebot import TeleBot, types
 # Bot token and webhook URL
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = TeleBot(BOT_TOKEN)
-WEBHOOK_URL = f"https://your-app-name.onrender.com/{BOT_TOKEN}"  # Replace with your Render URL
+WEBHOOK_URL = f"https://977105.onrender.com/{BOT_TOKEN}"  # Replace with your Render URL
 
 # Import handlers (now in flat structure)
 from start import setup_start_handler
