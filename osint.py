@@ -2,7 +2,7 @@ import re
 import requests
 from telebot import types
 from bs4 import BeautifulSoup
-from utils.user_db import can_use_osint, add_osint_usage, get_referral_link, is_admin
+from user_db import can_use_osint, add_osint_usage, get_referral_link, is_admin
 
 TRUECALLER_API_KEY = "ee74f88abcmshe019247b16f750bp1d4f84jsn6e959aafb711"
 
