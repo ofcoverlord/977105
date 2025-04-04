@@ -8,7 +8,7 @@ from menu import show_main_menu
 import os
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN") or "YOUR_BOT_TOKEN"
-WEBHOOK_URL = f"https://977105.onrender.com/{BOT_TOKEN}"  # ✅ Update if your URL is different
+WEBHOOK_URL = f"https://nine77105-rosy.onrender.com/{BOT_TOKEN}"  # ✅ Update if your URL is different
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
