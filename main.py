@@ -47,13 +47,14 @@ def webhook():
 @app.route("/", methods=["GET"])
 def home():
     return "🚀 Bot is running on Render with Webhook!"
-
-# Set webhook and start server
 if __name__ == "__main__":
     bot.remove_webhook()
     bot.set_webhook(url=WEBHOOK_URL)
     print("🚀 Webhook set. Bot is live!")
- app.run(host="0.0.0.0", port=10000)
+    
+    # FIXED INDENTATION
+    app.run(host="0.0.0.0", port=10000)
+
 
 
 
