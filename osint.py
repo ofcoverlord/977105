@@ -1,6 +1,6 @@
-
 import requests
 from telebot import types
+from datetime import datetime
 
 def setup_osint_handler(bot, user_modes):
 
@@ -28,40 +28,40 @@ def setup_osint_handler(bot, user_modes):
             res = requests.get(url)
             data = res.json()
 
-            # 🧠 Smart extraction
-            name = data.get("Truecaller") or data.get("Unknown") or "N/A"
+            # 🔎 Extract fields
+            name = data.get("Truecaller") or "No name found"
+            unknown = data.get("Unknown", "N/A")
             carrier = data.get("carrier", "N/A")
             location = data.get("location", "N/A")
             country = data.get("country", "N/A")
-            international_format = data.get("international_format", "N/A")
+            intl_format = data.get("international_format", "N/A")
             local_format = data.get("local_format", "N/A")
-            timezones = ", ".join(data.get("timezones", [])) if isinstance(data.get("timezones"), list) else data.get("timezones", "N/A")
-            photo = data.get("photo", None)
+            is_possible = "✅ Yes" if data.get("is_possible") else "❌ No"
+            timezones = ", ".join(data.get("timezones", [])) if isinstance(data.get("timezones"), list) else "N/A"
+            timestamp = data.get("timestamp")
+            photo = data.get("photo")
 
-            # 🔎 Clean Reply Builder
-            reply_parts = []
+            formatted_time = "N/A"
+            if timestamp:
+                try:
+                    dt = datetime.fromtimestamp(timestamp / 1000)
+                    formatted_time = dt.strftime("%d %B %Y, %I:%M %p")
+                except:
+                    pass
 
-            if name and name != "N/A":
-                reply_parts.append(f"📞 *Name:* {name}")
-            if carrier and carrier != "N/A":
-                reply_parts.append(f"📡 *Carrier:* {carrier}")
-            if location and location != "N/A":
-                reply_parts.append(f"🌍 *Location:* {location}")
-            if country and country != "N/A":
-                reply_parts.append(f"🌎 *Country:* {country}")
-            if timezones and timezones != "N/A":
-                reply_parts.append(f"⏰ *Timezone:* {timezones}")
-            if international_format and international_format != "N/A":
-                reply_parts.append(f"📲 *Intl Format:* {international_format}")
-            if local_format and local_format != "N/A":
-                reply_parts.append(f"📱 *Local Format:* {local_format}")
+            # 🧠 Build reply
+            reply = f"""📞 *Name:* {name}
+🧑‍🦰 *Alt Name:* {unknown}
+📡 *Carrier:* {carrier}
+🌍 *Location:* {location}
+🌎 *Country:* {country}
+⏰ *Timezone:* {timezones}
+📲 *Intl Format:* {intl_format}
+📱 *Local Format:* {local_format}
+📶 *Is Valid Number:* {is_possible}
+🕒 *Last Updated:* {formatted_time}"""
 
-            if not reply_parts:
-                reply_parts.append("⚠️ No useful data found for this number.")
-
-            reply = "\n".join(reply_parts)
-
-            # 🖼️ Send with image if available
+            # 🖼️ With profile image
             if photo:
                 bot.send_photo(message.chat.id, photo, caption=reply, parse_mode="Markdown")
             else:
@@ -71,7 +71,8 @@ def setup_osint_handler(bot, user_modes):
             print("OSINT Error:", e)
             bot.send_message(message.chat.id, "⚠️ Could not fetch data. Please try again later.")
 
-    @bot.message_handler(func=lambda message: user_modes.get(message.chat.id) == "osint" and message.text != "🕵️ OSINT Tools")
-    def deactivate_osint_mode(message):
-        user_modes[message.chat.id] = None
+    # Optional: exit OSINT mode if another button is clicked
+    @bot.message_handler(func=lambda msg: user_modes.get(msg.chat.id) == "osint" and msg.text not in ["🕵️ OSINT Tools"])
+    def deactivate_osint_mode(msg):
+        user_modes[msg.chat.id] = None
 
