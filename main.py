@@ -6,43 +6,41 @@ import os
 from telebot import types
 from start import setup_start_handler
 from verify import setup_verification_handler
-from menu import show_main_menu  # only for showing keyboard
+from menu import show_main_menu
 
-# ✅ Your bot token and webhook setup
+# ✅ Bot token and Webhook
 BOT_TOKEN = os.environ.get("BOT_TOKEN") or "YOUR_BOT_TOKEN"
-WEBHOOK_URL = f"https://nine77105-rosy.onrender.com/{BOT_TOKEN}"  # Update if needed
+WEBHOOK_URL = f"https://nine77105-rosy.onrender.com/{BOT_TOKEN}"
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
 
-# ✅ In-memory user data
+# ✅ User states
 users = {}
 user_modes = {}
 
-# ✅ Setup core handlers
+# ✅ Core Setup
 setup_start_handler(bot, users, user_modes)
 setup_verification_handler(bot, users)
 
-# ✅ Add your feature handlers
-# ✅ Add your feature handlers
+# ✅ Features
 from phishing import setup_phishing_handler
 from osint import setup_osint_handler
 from camera import setup_camera_handler
 from location import setup_location_handler
 
 setup_phishing_handler(bot)
-setup_osint_handler(bot, user_modes)  # ✅ Fixed line
+setup_osint_handler(bot, user_modes)
 setup_camera_handler(bot)
 setup_location_handler(bot)
 
-
-# ✅ Fallback for unknown messages
+# ✅ Fallback
 @bot.message_handler(func=lambda msg: True)
 def fallback(msg):
     print(f"📩 Message from {msg.chat.id}: {msg.text}")
     bot.send_message(msg.chat.id, "🤖 I'm alive, but command not recognized!")
 
-# ✅ Webhook endpoint
+# ✅ Webhook Route
 @app.route(f"/{BOT_TOKEN}", methods=["POST"])
 def webhook():
     if request.headers.get("content-type") == "application/json":
