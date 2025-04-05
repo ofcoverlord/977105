@@ -1,28 +1,23 @@
-from telebot.types import Message
 import requests
-from telebot import TeleBot
+from telebot import types
 
-# 🧠 Temporary state to track active OSINT session
-user_osint_mode = {}
-
-def setup_osint_handler(bot: TeleBot, user_modes):
+def setup_osint_handler(bot, user_modes):
 
     @bot.message_handler(func=lambda message: message.text == "🕵️ OSINT Tools")
-    def activate_osint_mode(message: Message):
-        user_osint_mode[message.from_user.id] = True
+    def activate_osint_mode(message):
+        user_id = message.chat.id
+        user_modes[user_id] = "osint"
         bot.send_message(
-            message.chat.id,
+            user_id,
             "🕵️ *OSINT Mode Activated!*\n\nSend me a phone number like `+919876543210` 📞 and I’ll search Truecaller for details.",
             parse_mode="Markdown"
         )
 
-    @bot.message_handler(func=lambda msg: user_osint_mode.get(msg.from_user.id) is True)
-    def handle_osint_query(message: Message):
-        user_id = message.from_user.id
+    @bot.message_handler(func=lambda message: user_modes.get(message.chat.id) == "osint")
+    def handle_phone_number(message):
         number = message.text.strip()
-
         if not number.startswith("+"):
-            bot.send_message(message.chat.id, "⚠️ Please enter number with country code like +91...")
+            bot.send_message(message.chat.id, "⚠️ Please send a valid phone number with country code, like `+91xxxxxxxxxx`.", parse_mode="Markdown")
             return
 
         bot.send_message(message.chat.id, f"🔍 Searching for `{number}` on Truecaller...", parse_mode="Markdown")
@@ -32,27 +27,25 @@ def setup_osint_handler(bot: TeleBot, user_modes):
             response = requests.get(url)
             data = response.json()
 
-            if data.get("name"):
-                name = data.get("name", "N/A")
-                carrier = data.get("carrier", "N/A")
-                location = data.get("location", "N/A")
+            name = data.get("name", "N/A")
+            carrier = data.get("carrier", "N/A")
+            location = data.get("location", "N/A")
 
+            if name == "N/A" and carrier == "N/A" and location == "N/A":
+                bot.send_message(message.chat.id, "❌ No details found for this number.")
+            else:
                 bot.send_message(
                     message.chat.id,
                     f"📞 *Name:* {name}\n📡 *Carrier:* {carrier}\n📍 *Location:* {location}",
                     parse_mode="Markdown"
                 )
-            else:
-                bot.send_message(message.chat.id, "❌ No details found for this number.")
 
         except Exception as e:
-            bot.send_message(message.chat.id, f"⚠️ API Error: `{str(e)}`", parse_mode="Markdown")
+            print(f"OSINT error: {e}")
+            bot.send_message(message.chat.id, "⚠️ An error occurred while fetching the data. Please try again later.")
 
-        # 🔻 Deactivate OSINT mode after lookup
-        user_osint_mode[user_id] = False
-
-    # 🔻 Deactivate OSINT if user taps anything else
-    @bot.message_handler(func=lambda msg: msg.text != "🕵️ OSINT Tools" and user_osint_mode.get(msg.from_user.id))
-    def deactivate_osint_mode(message: Message):
-        user_osint_mode[message.from_user.id] = False
+    @bot.message_handler(func=lambda message: user_modes.get(message.chat.id) == "osint" and message.text != "🕵️ OSINT Tools")
+    def deactivate_on_other_buttons(message):
+        if message.text not in ["🕵️ OSINT Tools"]:
+            user_modes[message.chat.id] = None
 
